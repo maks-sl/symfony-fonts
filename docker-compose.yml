@@ -1,0 +1,12 @@
+version: '3'
+services:
+    php-cli:
+        build:
+            context: ./app/docker/development
+            dockerfile: php-cli.docker
+        volumes:
+            - ./app:/app
+            - composer:/root/.composer/cache
+
+volumes:
+    composer:
