@@ -4,6 +4,9 @@ restart: docker-down docker-up
 init: docker-down-clear docker-pull docker-build docker-up
 console: cli-bash
 
+perm:
+	sudo chown -R ${USER}:$$(id -gn ${USER}) ./app
+
 docker-up:
 	docker-compose up -d
 
