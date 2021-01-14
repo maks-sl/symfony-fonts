@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% block title %}Login{% endblock %}
+{% block body %}
+    <form method="post">
+        {% if error %}
+            <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+        <h1>Please sign in</h1>
+        <label for="inputEmail">Email address</label>
+        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" placeholder="Email address" required autofocus>
+        <label for="inputPassword">Password</label>
+        <input type="password" name="password" id="inputPassword" placeholder="Password" required>
+        <button type="submit">
+            Sign in
+        </button>
+    </form>
+{% endblock %}
