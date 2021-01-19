@@ -33,6 +33,10 @@ class User
      * @var string
      */
     private $status;
+    /**
+     * @var string|null
+     */
+    private $confirmToken;
 
     private function __construct(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name)
     {
@@ -48,6 +52,24 @@ class User
         $user = new self($id, $date, $email, $hash, $name);
         $user->status = self::STATUS_ACTIVE;
         return $user;
+    }
+
+    public static function signUpRequest(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name, string $token): self
+    {
+        $user = new self($id, $date, $email, $hash, $name);
+        $user->confirmToken = $token;
+        $user->status = self::STATUS_WAIT;
+        return $user;
+    }
+
+    public function signUpConfirm(): void
+    {
+        if (!$this->isWait()) {
+            throw new \DomainException('User is already confirmed.');
+        }
+
+        $this->status = self::STATUS_ACTIVE;
+        $this->confirmToken = null;
     }
 
     public function getId(): Id
@@ -78,6 +100,11 @@ class User
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getConfirmToken(): ?string
+    {
+        return $this->confirmToken;
     }
 
     public function isWait(): bool
