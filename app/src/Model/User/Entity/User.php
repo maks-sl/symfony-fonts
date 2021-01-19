@@ -34,6 +34,10 @@ class User
      */
     private $status;
     /**
+     * @var Role
+     */
+    private $role;
+    /**
      * @var string|null
      */
     private $confirmToken;
@@ -45,6 +49,7 @@ class User
         $this->email = $email;
         $this->passwordHash = $hash;
         $this->name = $name;
+        $this->role = Role::user();
     }
 
     public static function create(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name): self
@@ -70,6 +75,14 @@ class User
 
         $this->status = self::STATUS_ACTIVE;
         $this->confirmToken = null;
+    }
+
+    public function changeRole(Role $role): void
+    {
+        if ($this->role->isEqual($role)) {
+            throw new \DomainException('Role is already same.');
+        }
+        $this->role = $role;
     }
 
     public function getId(): Id
@@ -100,6 +113,11 @@ class User
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getRole(): Role
+    {
+        return $this->role;
     }
 
     public function getConfirmToken(): ?string

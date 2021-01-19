@@ -6,6 +6,7 @@ namespace App\Tests\Builder\User;
 
 use App\Model\User\Entity\Email;
 use App\Model\User\Entity\Name;
+use App\Model\User\Entity\Role;
 use App\Model\User\Entity\User;
 use App\Model\User\Entity\Id;
 
@@ -58,6 +59,13 @@ class UserBuilder
         return $clone;
     }
 
+    public function withRole(Role $role): self
+    {
+        $clone = clone $this;
+        $clone->role = $role;
+        return $clone;
+    }
+
     public function confirmed(): self
     {
         $clone = clone $this;
@@ -78,6 +86,10 @@ class UserBuilder
 
         if ($this->confirmed) {
             $user->signUpConfirm();
+        }
+
+        if ($this->role) {
+            $user->changeRole($this->role);
         }
 
         return $user;

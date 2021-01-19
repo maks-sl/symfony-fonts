@@ -22,6 +22,9 @@ class CreateTest extends TestCase
             $name = new Name('First', 'Last')
         );
 
+        self::assertFalse($user->isWait());
+        self::assertTrue($user->isActive());
+
         self::assertEquals($id, $user->getId());
         self::assertEquals($date, $user->getDate());
         self::assertEquals($name, $user->getName());
@@ -29,7 +32,6 @@ class CreateTest extends TestCase
         self::assertEquals($hash, $user->getPasswordHash());
         self::assertNull($user->getConfirmToken());
 
-        self::assertFalse($user->isWait());
-        self::assertTrue($user->isActive());
+        self::assertTrue($user->getRole()->isUser());
     }
 }
