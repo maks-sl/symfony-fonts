@@ -8,6 +8,7 @@ class User
 {
     public const STATUS_WAIT = 'wait';
     public const STATUS_ACTIVE = 'active';
+    public const STATUS_BLOCKED = 'blocked';
 
     /**
      * @var Id
@@ -52,6 +53,8 @@ class User
         $this->role = Role::user();
     }
 
+    // ##### CONSTRUCTORS #####
+
     public static function create(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name): self
     {
         $user = new self($id, $date, $email, $hash, $name);
@@ -66,6 +69,8 @@ class User
         $user->status = self::STATUS_WAIT;
         return $user;
     }
+
+    // ##### LOGIC #####
 
     public function signUpConfirm(): void
     {
@@ -90,6 +95,47 @@ class User
         $this->name = $name;
         $this->email = $email;
     }
+
+    public function activate(): void
+    {
+        if ($this->isWait()) {
+            throw new \DomainException('User is not confirmed.');
+        }
+        if ($this->isActive()) {
+            throw new \DomainException('User is already active.');
+        }
+        $this->status = self::STATUS_ACTIVE;
+    }
+
+    public function block(): void
+    {
+        if ($this->isWait()) {
+            throw new \DomainException('User is not confirmed.');
+        }
+        if ($this->isBlocked()) {
+            throw new \DomainException('User is already blocked.');
+        }
+        $this->status = self::STATUS_BLOCKED;
+    }
+
+    // ##### IS METHODS #####
+
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function isBlocked(): bool
+    {
+        return $this->status === self::STATUS_BLOCKED;
+    }
+
+    // ##### GETTERS #####
 
     public function getId(): Id
     {
@@ -129,15 +175,5 @@ class User
     public function getConfirmToken(): ?string
     {
         return $this->confirmToken;
-    }
-
-    public function isWait(): bool
-    {
-        return $this->status === self::STATUS_WAIT;
-    }
-
-    public function isActive(): bool
-    {
-        return $this->status === self::STATUS_ACTIVE;
     }
 }
