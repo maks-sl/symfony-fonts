@@ -28,5 +28,7 @@ class CreateTest extends TestCase
         self::assertEquals($email, $user->getEmail());
         self::assertEquals($hash, $user->getPasswordHash());
 
+        self::assertFalse($user->isWait());
+        self::assertTrue($user->isActive());
     }
 }

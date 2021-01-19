@@ -6,6 +6,9 @@ namespace App\Model\User\Entity;
 
 class User
 {
+    public const STATUS_WAIT = 'wait';
+    public const STATUS_ACTIVE = 'active';
+
     /**
      * @var Id
      */
@@ -26,6 +29,10 @@ class User
      * @var Name
      */
     private $name;
+    /**
+     * @var string
+     */
+    private $status;
 
     private function __construct(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name)
     {
@@ -38,7 +45,9 @@ class User
 
     public static function create(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name): self
     {
-        return new self($id, $date, $email, $hash, $name);
+        $user = new self($id, $date, $email, $hash, $name);
+        $user->status = self::STATUS_ACTIVE;
+        return $user;
     }
 
     public function getId(): Id
@@ -64,5 +73,20 @@ class User
     public function getName(): Name
     {
         return $this->name;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function isWait(): bool
+    {
+        return $this->status === self::STATUS_WAIT;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_ACTIVE;
     }
 }
