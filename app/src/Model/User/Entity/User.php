@@ -42,6 +42,10 @@ class User
      * @var string|null
      */
     private $confirmToken;
+    /**
+     * @var ResetToken|null
+     */
+    private $resetToken;
 
     private function __construct(Id $id, \DateTimeImmutable $date, Email $email, string $hash, Name $name)
     {
@@ -118,6 +122,29 @@ class User
         $this->status = self::STATUS_BLOCKED;
     }
 
+    public function passwordResetRequest(ResetToken $token, \DateTimeImmutable $date): void
+    {
+        if (!$this->isActive()) {
+            throw new \DomainException('User is not active.');
+        }
+        if ($this->resetToken && !$this->resetToken->isExpiredTo($date)) {
+            throw new \DomainException('Resetting is already requested.');
+        }
+        $this->resetToken = $token;
+    }
+
+    public function passwordReset(\DateTimeImmutable $date, string $hash): void
+    {
+        if (!$this->resetToken) {
+            throw new \DomainException('Resetting is not requested.');
+        }
+        if ($this->resetToken->isExpiredTo($date)) {
+            throw new \DomainException('Reset token is expired.');
+        }
+        $this->passwordHash = $hash;
+        $this->resetToken = null;
+    }
+
     // ##### IS METHODS #####
 
     public function isWait(): bool
@@ -175,5 +202,10 @@ class User
     public function getConfirmToken(): ?string
     {
         return $this->confirmToken;
+    }
+
+    public function getResetToken(): ?ResetToken
+    {
+        return $this->resetToken;
     }
 }
