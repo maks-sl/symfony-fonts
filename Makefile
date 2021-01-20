@@ -3,6 +3,7 @@ down: docker-down
 restart: docker-down docker-up
 init: docker-down-clear docker-pull docker-build docker-up
 console: cli-bash
+test: app-test
 
 perm:
 	sudo chown -R ${USER}:$$(id -gn ${USER}) ./app
@@ -24,3 +25,6 @@ docker-build:
 
 cli-bash:
 	docker-compose run --rm php-cli bash
+
+app-test:
+	docker-compose run --rm php-cli php bin/phpunit
