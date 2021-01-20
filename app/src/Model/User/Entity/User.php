@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 namespace App\Model\User\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="user_users", uniqueConstraints={
+ *     @ORM\UniqueConstraint(columns={"email"}),
+ *     @ORM\UniqueConstraint(columns={"confirm_token"}),
+ *     @ORM\UniqueConstraint(columns={"reset_token_token"})
+ * })
+ */
 class User
 {
     public const STATUS_WAIT = 'wait';
@@ -12,38 +23,48 @@ class User
 
     /**
      * @var Id
+     * @ORM\Column(type="user_id")
+     * @ORM\Id
      */
     private $id;
     /**
      * @var \DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable")
      */
     private $date;
     /**
      * @var Email|null
+     * @ORM\Column(type="user_email")
      */
     private $email;
     /**
      * @var string|null
+     * @ORM\Column(type="string")
      */
     private $passwordHash;
     /**
      * @var Name
+     * @ORM\Embedded(class="Name")
      */
     private $name;
     /**
      * @var string
+     * @ORM\Column(type="string", length=16)
      */
     private $status;
     /**
      * @var Role
+     * @ORM\Column(type="user_role", length=16)
      */
     private $role;
     /**
      * @var string|null
+     * @ORM\Column(type="string", nullable=true)
      */
     private $confirmToken;
     /**
      * @var ResetToken|null
+     * @ORM\Embedded(class="ResetToken")
      */
     private $resetToken;
 
@@ -207,5 +228,17 @@ class User
     public function getResetToken(): ?ResetToken
     {
         return $this->resetToken;
+    }
+
+    // ##### LIFECYCLE CALLBACK #####
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function cleanEmbeds(): void
+    {
+        if ($this->resetToken->isEmpty()) {
+            $this->resetToken = null;
+        }
     }
 }
