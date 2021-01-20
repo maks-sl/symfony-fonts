@@ -2,11 +2,10 @@
 
 namespace App\Security;
 
-use App\Repository\UserRepository;
+use App\Model\User\Service\PasswordHasher;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -21,24 +20,21 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 {
     use TargetPathTrait;
 
-    private $userRepository;
     private $urlGenerator;
-    private $passwordEncoder;
     private $csrfTokenManager;
+    private $hasher;
 
     public function __construct(
-        UserRepository $userRepository,
         UrlGeneratorInterface $urlGenerator,
-        UserPasswordEncoderInterface $passwordEncoder,
-        CsrfTokenManagerInterface $csrfTokenManager)
+        CsrfTokenManagerInterface $csrfTokenManager,
+        PasswordHasher $hasher)
     {
-        $this->userRepository = $userRepository;
         $this->urlGenerator = $urlGenerator;
-        $this->passwordEncoder = $passwordEncoder;
         $this->csrfTokenManager = $csrfTokenManager;
+        $this->hasher = $hasher;
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): bool
     {
         return $request->attributes->get('_route') === 'app_login'
             && $request->isMethod('POST');
@@ -64,12 +60,12 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
         }
-        return $this->userRepository->findOneBy(['email' => $credentials['email']]);
+        return $userProvider->loadUserByUsername($credentials['email']);
     }
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+        return $this->hasher->validate($credentials['password'], $user->getPassword());
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey)

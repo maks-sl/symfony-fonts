@@ -1,13 +1,10 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: argon2i
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        app_user_provider:
+        user_provider:
             entity:
-                class: App\Entity\User
+                class: App\Model\User\Entity\User
                 property: email
 
     firewalls:
