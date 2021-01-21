@@ -1,7 +1,7 @@
 up: docker-up
 down: docker-down
 restart: docker-down docker-up
-init: docker-down-clear docker-pull docker-build docker-up
+init: docker-down-clear docker-pull docker-build docker-up app-init-auto
 console: cli-bash
 test: app-test
 
@@ -28,6 +28,8 @@ cli-bash:
 
 app-test:
 	docker-compose run --rm php-cli php bin/phpunit
+
+app-init-auto: app-composer-install app-wait-db app-migrations app-fixtures
 
 app-composer-install:
 	docker-compose run --rm php-cli composer install
