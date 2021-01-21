@@ -3,9 +3,7 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         user_provider:
-            entity:
-                class: App\Model\User\Entity\User
-                property: email
+            id: App\Security\UserProvider
 
     firewalls:
         dev:

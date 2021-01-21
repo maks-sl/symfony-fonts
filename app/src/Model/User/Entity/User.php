@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Model\User\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity
@@ -16,7 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *     @ORM\UniqueConstraint(columns={"reset_token_token"})
  * })
  */
-class User implements UserInterface
+class User
 {
     public const STATUS_WAIT = 'wait';
     public const STATUS_ACTIVE = 'active';
@@ -241,33 +240,5 @@ class User implements UserInterface
         if ($this->resetToken->isEmpty()) {
             $this->resetToken = null;
         }
-    }
-
-    // ##### IMPLEMENT SECURITY #####
-
-    public function getRoles()
-    {
-        return [$this->getRole()->getName()];
-    }
-
-    public function getPassword()
-    {
-        return $this->getPasswordHash();
-    }
-
-    public function getSalt()
-    {
-        return null;
-    }
-
-    public function getUsername()
-    {
-        return $this->getEmail()->getValue();
-    }
-
-    public function eraseCredentials()
-    {
-        $this->resetToken = null;
-        $this->confirmToken = null;
     }
 }
