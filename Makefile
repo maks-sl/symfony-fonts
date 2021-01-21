@@ -28,3 +28,15 @@ cli-bash:
 
 app-test:
 	docker-compose run --rm php-cli php bin/phpunit
+
+app-composer-install:
+	docker-compose run --rm php-cli composer install
+
+app-wait-db:
+	until docker-compose exec -T postgres pg_isready --timeout=0 --dbname=app ; do sleep 1 ; done
+
+app-migrations:
+	docker-compose run --rm php-cli php bin/console do:mi:mi --no-interaction
+
+app-fixtures:
+	docker-compose run --rm php-cli php bin/console do:fi:lo --no-interaction
