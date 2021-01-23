@@ -27,6 +27,11 @@ services:
             - composer:/root/.composer/cache
         depends_on:
             - postgres
+    node:
+          image: node:15.6-alpine
+          volumes:
+              - ./app:/app
+          working_dir: /app
     postgres:
         image: postgres:13.1-alpine
         volumes:
