@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <title>{% block title %}Manage Panel{% endblock %}</title>
+
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+
+</head>
+<body class="c-app">
+
+{# https://coreui.io/demo/free/3.4.0/ #}
+
+<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+
+    <div class="c-sidebar-brand d-lg-down-none">
+        <img class="c-sidebar-brand-full" src="/images/logo-white.png" width="115" height="45" alt="">
+    </div>
+    <ul class="c-sidebar-nav">
+        <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link" href="#">
+                <span class="c-sidebar-nav-icon cil-user"></span> Menu 1</a></li>
+        <li class="c-sidebar-nav-dropdown"><a class="c-sidebar-nav-dropdown-toggle" href="#">
+                <span class="c-sidebar-nav-icon cil-star"></span> Menu 2</a>
+            <ul class="c-sidebar-nav-dropdown-items">
+                <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link" href="#"> Sub Menu 1<span class="badge badge-success">Free</span></a></li>
+                <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link" href="#"> Sub Menu 2</a></li>
+                <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link" href="#"> Sub Menu 3</a></li>
+            </ul>
+        </li>
+    </ul>
+    <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
+</div>
+<div class="c-wrapper c-fixed-components">
+    <header class="c-header c-header-light c-header-fixed c-header-with-subheader">
+        <button class="c-header-toggler c-class-toggler d-lg-none mfe-auto" type="button" data-target="#sidebar" data-class="c-sidebar-show">
+            <span class="c-icon c-icon-lg cil-menu"></span>
+        </button>
+        <a class="c-header-brand d-lg-none" href="#">
+            <img class="c-sidebar-brand-full" src="/images/logo-black.png" width="115" height="45" alt="">
+        </a>
+        <button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+            <span class="c-icon c-icon-lg cil-menu"></span>
+        </button>
+        <ul class="c-header-nav d-md-down-none">
+            <li class="c-header-nav-item px-3"><a class="c-header-nav-link" href="#">Link 1</a></li>
+            <li class="c-header-nav-item px-3"><a class="c-header-nav-link" href="#">Link 2</a></li>
+        </ul>
+        <ul class="c-header-nav ml-auto mr-4">
+            <li class="c-header-nav-item dropdown"><a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{ app.user.display }}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right pt-0">
+                    <div class="dropdown-header bg-light py-2"><strong>Settings</strong></div>
+                    <a class="dropdown-item" href="#">Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            </li>
+        </ul>
+        <div class="c-subheader px-3">
+            <ol class="breadcrumb border-0 m-0">
+                {% block breadcrumbs %}{% endblock %}
+            </ol>
+        </div>
+    </header>
+    <div class="c-body">
+        <main class="c-main">
+            <div class="container-fluid">
+                {% include '_flashes.html.twig' %}
+                <div class="fade-in">
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+        </main>
+        <footer class="c-footer">
+            <div><a href="https://coreui.io">CoreUI</a> © {{ "now"|date("Y") }} creativeLabs.</div>
+            <div class="ml-auto">Powered by&nbsp;<a href="https://coreui.io/">CoreUI</a></div>
+        </footer>
+    </div>
+</div>
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+</body>
+</html>

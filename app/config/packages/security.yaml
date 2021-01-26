@@ -37,3 +37,4 @@ security:
         # - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY } # ALLOW ANONYMOUS [inc. IS_AUTHENTICATED_REMEMBERED]
         # - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED } # AUTH BY REMEMBER_ME [inc. IS_AUTHENTICATED_FULLY]
         # - { path: ^/account, roles: IS_AUTHENTICATED_FULLY } # AUTH DURING CURRENT SESSION ONLY
+        - { path: ^/panel, roles: ROLE_ADMIN }
