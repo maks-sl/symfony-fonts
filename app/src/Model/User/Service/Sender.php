@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\User\Service;
 
 use App\Model\User\Entity\Email as UserEmail;
+use App\Model\User\Entity\ResetToken;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
@@ -16,6 +17,19 @@ class Sender
     public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
+    }
+
+    public function sendResetToken(UserEmail $email, ResetToken $token): void
+    {
+        $message = (new TemplatedEmail())
+            ->from(new Address('send@app.loc', 'App.loc'))
+            ->to($email->getValue())
+            ->subject('Password resetting')
+            ->htmlTemplate('mail/user/reset.html.twig')
+            ->context([
+                'token' => $token->getToken()
+            ]);
+        $this->mailer->send($message);
     }
 
     public function sendSignUpConfirmToken(UserEmail $email, string $token): void

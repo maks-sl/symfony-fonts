@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\User\Service;
 
+use App\Model\User\Entity\ResetToken;
 use Ramsey\Uuid\Uuid;
 
 class Tokenizer
@@ -18,6 +19,14 @@ class Tokenizer
     public function generateUuid(): string
     {
         return Uuid::uuid4()->toString();
+    }
+
+    public function generateResetToken(): ResetToken
+    {
+        return new ResetToken(
+            Uuid::uuid4()->toString(),
+            (new \DateTimeImmutable())->add($this->interval)
+        );
     }
 
 }

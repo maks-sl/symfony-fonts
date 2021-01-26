@@ -98,6 +98,18 @@ class UserFetcher
         return $stmt->fetchOne() > 0;
     }
 
+    public function hasByResetToken(string $token): bool
+    {
+        $stmt = $this->connection->createQueryBuilder()
+            ->select('COUNT (*)')
+            ->from('user_users')
+            ->where('reset_token_token = :token')
+            ->setParameter(':token', $token)
+            ->execute();
+
+        return $stmt->fetchOne() > 0;
+    }
+
     /**
      * @param Filter $filter
      * @param int $page

@@ -34,6 +34,15 @@ class UserRepository
         return $user;
     }
 
+    public function getByEmail(Email $email): User
+    {
+        /** @var User $user */
+        if (!$user = $this->repo->findOneBy(['email' => $email->getValue()])) {
+            throw new EntityNotFoundException('User is not found.');
+        }
+        return $user;
+    }
+
     /**
      * @param string $token
      * @return User|object|null
@@ -41,6 +50,15 @@ class UserRepository
     public function findByConfirmToken(string $token): ?User
     {
         return $this->repo->findOneBy(['confirmToken' => $token]);
+    }
+
+    /**
+     * @param string $token
+     * @return User|object|null
+     */
+    public function findByResetToken(string $token): ?User
+    {
+        return $this->repo->findOneBy(['resetToken.token' => $token]);
     }
 
     public function hasByEmail(Email $email): bool
