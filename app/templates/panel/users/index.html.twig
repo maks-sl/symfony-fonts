@@ -1,0 +1,70 @@
+{% extends 'panel.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('panel') }}">Panel</a></li>
+    <li class="breadcrumb-item active">Users</li>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="controls">
+                <a href="{{ path('users.create') }}" class="btn btn-success">Create User</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="controls mb-3">
+                {{ form_start(form) }}
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">.
+
+                    <div class="input-group mr-2 pt-2" role="group" aria-label="Filter group">
+                        {{ form_widget(form.name) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_widget(form.role) }}
+                        {{ form_widget(form.status) }}
+                    </div>
+                    <div class="btn-group pt-2">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ path('users') }}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+
+            <div class="box">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>{{ knp_pagination_sortable(pagination, 'Date', 'date') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Name', 'name') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Email', 'email') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Role', 'role') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Status', 'status') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in pagination %}
+                        <tr>
+                            <td>{{ user.date|date('Y-m-d') }}</td>
+                            <td><a href="{{ path('users.show', {'id': user.id}) }}">{{ user.name }}</a></td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user_role(user.role) }}</td>
+                            <td>{{ user_status(user.status) }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
