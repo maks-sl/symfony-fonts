@@ -66,6 +66,26 @@ class UserFetcher
         return ShortView::fromArray($result);
     }
 
+    public function findBySignUpConfirmToken(string $token): ?ShortView
+    {
+        $stmt = $this->connection->createQueryBuilder()
+            ->select(
+                'id',
+                'email',
+                'role',
+                'status'
+            )
+            ->from('user_users')
+            ->where('confirm_token = :token')
+            ->setParameter(':token', $token)
+            ->execute();
+
+        if (!$result = $stmt->fetchAssociative()) {
+            return null;
+        }
+        return ShortView::fromArray($result);
+    }
+
     public function hasByEmail(string $email): bool
     {
         $stmt = $this->connection->createQueryBuilder()

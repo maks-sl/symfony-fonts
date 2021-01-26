@@ -34,6 +34,15 @@ class UserRepository
         return $user;
     }
 
+    /**
+     * @param string $token
+     * @return User|object|null
+     */
+    public function findByConfirmToken(string $token): ?User
+    {
+        return $this->repo->findOneBy(['confirmToken' => $token]);
+    }
+
     public function hasByEmail(Email $email): bool
     {
         return $this->repo->count(['email' => $email->getValue()]) > 0;
