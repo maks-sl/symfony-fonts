@@ -99,6 +99,12 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "1.x-dev"
     },
+    "knplabs/knp-components": {
+        "version": "3.x-dev"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "5.x-dev"
+    },
     "laminas/laminas-code": {
         "version": "4.0.x-dev"
     },
