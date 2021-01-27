@@ -11,9 +11,9 @@ class Tokenizer
 {
     private $interval;
 
-    public function __construct()
+    public function __construct(\DateInterval $interval)
     {
-        $this->interval = new \DateInterval('PT1H');
+        $this->interval = $interval;
     }
 
     public function generateUuid(): string
