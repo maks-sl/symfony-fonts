@@ -33,3 +33,6 @@ services:
     App\Model\User\Service\Tokenizer:
         factory: ['@App\Model\User\Service\Factory\TokenizerFactory', 'create']
         arguments: [ 'PT1H' ]
+
+    App\EventListeners\MailerSubscriber:
+        arguments: ['%env(MAILER_FROM_EMAIL)%', '%env(MAILER_FROM_NAME)%']
