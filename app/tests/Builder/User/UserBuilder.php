@@ -66,6 +66,13 @@ class UserBuilder
         return $clone;
     }
 
+    public function withToken(string $token): self
+    {
+        $clone = clone $this;
+        $clone->token = $token;
+        return $clone;
+    }
+
     public function confirmed(): self
     {
         $clone = clone $this;
