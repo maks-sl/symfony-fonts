@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
-class HomeTest extends WebTestCase
+class HomeTest extends DbWebTestCase
 {
     public function testSuccess(): void
     {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/');
+        $crawler = $this->client->request('GET', '/');
 
-        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $this->assertStringContainsString('Welcome!', $crawler->filter('title')->text());
     }
 }
