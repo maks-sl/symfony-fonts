@@ -48,6 +48,14 @@ services:
         image: mailhog/mailhog
         ports:
             - "8082:8025"
+    storage-ftp:
+        image: stilliard/pure-ftpd
+        environment:
+            FTP_USER_NAME: app
+            FTP_USER_PASS: secret
+            FTP_USER_HOME: /app
+        volumes:
+            - ./storage/public:/app
 volumes:
     composer:
     postgres:
