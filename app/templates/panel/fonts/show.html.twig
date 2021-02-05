@@ -1,0 +1,112 @@
+{% extends 'panel.html.twig' %}
+
+{% block title %}{{ font.name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('panel') }}">Panel</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('fonts') }}">Fonts</a></li>
+    <li class="breadcrumb-item active">{{ font.name }}</li>
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="mt-0 mb-3 font-xl">
+        {{ font.name }}
+    </h1>
+
+    <div class="controls mb-3">
+        <a href="{{ path('fonts.edit', {'id': font.id}) }}" class="btn btn-primary">Edit</a>
+        <form action="{{ path('fonts.delete', {'id': font.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item mr-0">
+            <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card">
+                <div class="card-header">
+                    Font Details
+                </div>
+                <table class="table table-bordered mb-0">
+                    <tbody>
+                        <tr>
+                            <th>ID</th>
+                            <td>{{ font.id }}</td>
+                            <th>License</th>
+                            <td>{{ font.license.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Slug</th>
+                            <td>{{ font.slug }}</td>
+                            <th>Has CSS</th>
+                            <td>{{ badge_yes_or_no(font.hasCss()) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Languages</th>
+                            <td>
+                                {% for language in font.languages %}
+                                    {{ language.name }}
+                                    {% if not loop.last %}|{% endif %}
+                                {% endfor %}
+                            </td>
+                            <th>Has Zip</th>
+                            <td>{{ badge_yes_or_no(font.hasZip()) }}</td>
+
+                        </tr>
+                        <tr>
+                            <th>Author</th>
+                            <td>{{ font.author }}</td>
+                            <th>Zip Consistent</th>
+                            <td>{{ badge_yes_or_no(font.isZipConsistent()) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Create Date</th>
+                            <td>{{ font.date|date('Y-m-d H:i:s') }}</td>
+                            <th>Status</th>
+                            <td>{{ font_status(font.status.name) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    Faces ({{ font.faces|length }})
+                </div>
+                <table class="table mb-0">
+                    <tbody>
+                    {% for face in font.faces %}
+                        <tr>
+                            <td>{{ face.name }}</td>
+                            <td>{{ face.files|length }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    Files ({{ font.files|length }})
+                </div>
+                <table class="table mb-0">
+                    <tbody>
+                        {% for file in font.files %}
+                            <tr>
+                                <td>
+                                    {{ file.info.name }}
+                                </td>
+                                <td>{{ file.info.ext }}</td>
+                                <td>{{ (file.info.size / 1024)|number_format(2, '.', ',') }} KB</td>
+                                <td>{{ file.date|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

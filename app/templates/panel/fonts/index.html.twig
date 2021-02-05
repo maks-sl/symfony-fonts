@@ -9,6 +9,10 @@
 
 {% block body %}
 
+    <div class="controls mb-3">
+        <a href="{{ path('fonts.create') }}" class="btn btn-success">Create Font</a>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="controls mb-3">
@@ -44,7 +48,7 @@
                     {% for font in pagination %}
                         <tr>
                             <td>
-                                <a href="#">{{ font.name }}</a>
+                                <a href="{{ path('fonts.show', {'id': font.id}) }}">{{ font.name }}</a>
                             </td>
                             <td>{{ font.slug }}</td>
                             <td>{{ font_status(font.status) }}</td>

@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Panel;
 
+use App\Annotation\Guid;
+
+use App\Model\Font\Entity\Font;
+use App\Model\Font\UseCase\Create;
+use App\Model\Font\UseCase\Edit;
+use App\Model\Font\UseCase\Remove;
+
 use App\ReadModel\Font\Filter;
 use App\ReadModel\Font\FontFetcher;
 
@@ -52,6 +59,100 @@ class FontsController extends AbstractController
             'pagination' => $pagination,
             'form' => $form->createView(),
         ]);
+    }
+
+
+    /**
+     * @Route("/{id}", name=".show", requirements={"id"=Guid::PATTERN})
+     * @param Font $font
+     * @return Response
+     */
+    public function show(Font $font): Response
+    {
+        return $this->render('panel/fonts/show.html.twig', compact('font'));
+    }
+
+    /**
+     * @Route("/create", name=".create")
+     * @param Request $request
+     * @param Create\Handler $handler
+     * @return Response
+     */
+    public function create(Request $request, Create\Handler $handler): Response
+    {
+        $command = new Create\Command();
+
+        $form = $this->createForm(Create\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                return $this->redirectToRoute('fonts');
+            } catch (\DomainException $e) {
+                $this->errors->handle($e);
+                $this->addFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('panel/fonts/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/edit", name=".edit")
+     * @param Font $font
+     * @param Request $request
+     * @param Edit\Handler $handler
+     * @return Response
+     */
+    public function edit(Font $font, Request $request, Edit\Handler $handler): Response
+    {
+        $command = Edit\Command::fromFont($font);
+
+        $form = $this->createForm(Edit\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+            } catch (\DomainException $e) {
+                $this->errors->handle($e);
+                $this->addFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('panel/fonts/edit.html.twig', [
+            'font' => $font,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/delete", name=".delete", methods={"POST"})
+     * @param Font $font
+     * @param Request $request
+     * @param Remove\Handler $handler
+     * @return Response
+     */
+    public function delete(Font $font, Request $request, Remove\Handler $handler): Response
+    {
+        if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
+            return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+        }
+
+        $command = new Remove\Command($font->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->errors->handle($e);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('fonts');
     }
 
 }
