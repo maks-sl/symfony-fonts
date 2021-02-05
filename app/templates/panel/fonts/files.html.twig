@@ -1,0 +1,31 @@
+{% extends 'panel.html.twig' %}
+
+{% block title %}{{ font.name }}{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('panel') }}">Panel</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('fonts') }}">Fonts</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('fonts.show', {'id': font.id}) }}">{{ font.name }}</a></li>
+    <li class="breadcrumb-item active">Upload files</li>
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="mt-0 mb-3 font-xl">
+        {{ font.name }}
+    </h1>
+
+    <div class="card">
+        <div class="card-body">
+
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <div>
+                <button type="submit" class="btn btn-primary">Upload Files</button>
+            </div>
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+
+{% endblock %}

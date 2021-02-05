@@ -7,17 +7,20 @@ namespace App\Controller\Panel;
 use App\Annotation\Guid;
 
 use App\Model\Font\Entity\Font;
+use App\Model\Font\Service\File\FileManager;
 use App\Model\Font\UseCase\Create;
 use App\Model\Font\UseCase\Edit;
 use App\Model\Font\UseCase\Activate;
 use App\Model\Font\UseCase\Hide;
 use App\Model\Font\UseCase\Remove;
+use App\Model\Font\UseCase\Files;
 
 use App\ReadModel\Font\Filter;
 use App\ReadModel\Font\FontFetcher;
 
 use App\Controller\ErrorHandler;
 
+use League\Flysystem\FilesystemException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -207,4 +210,40 @@ class FontsController extends AbstractController
         return $this->redirectToRoute('fonts');
     }
 
+    //////////// FILES
+
+    /**
+     * @Route("/{id}/files", name=".files")
+     * @param Font $font
+     * @param Request $request
+     * @param Files\Add\Handler $handler
+     * @param FileManager $fileManager
+     * @return Response
+     * @throws FilesystemException
+     */
+    public function files(Font $font, Request $request, Files\Add\Handler $handler, FileManager $fileManager): Response
+    {
+        $command = new Files\Add\Command($font->getId()->getValue());
+
+        $form = $this->createForm(Files\Add\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $files = $form->get('files')->getData();
+            try {
+                $command->files = $fileManager->uploadFiles($files, $font);
+                $handler->handle($command);
+                return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+            } catch (\DomainException $e) {
+                $this->errors->handle($e);
+                $this->addFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('panel/fonts/files.html.twig', [
+            'font' => $font,
+            'form' => $form->createView(),
+        ]);
+    }
 }
