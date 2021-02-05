@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Model\Font\Entity;
 
+use App\Model\Font\Entity\Face\Face;
 use App\Model\Font\Entity\File\File;
 
+use App\Model\Font\Entity\Face\Id as FaceId;
 use App\Model\Font\Entity\File\Id as FileId;
 use App\Model\Font\Entity\File\Info;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
 
 class Font
 {
@@ -23,6 +27,7 @@ class Font
     private $license;
     private $languages;
     private $files;
+    private $faces;
 
     /**
      * Font constructor.
@@ -53,6 +58,7 @@ class Font
         $this->setLanguages($languages);
         $this->status = Status::hidden();
         $this->files = new ArrayCollection();
+        $this->faces = new ArrayCollection();
     }
 
     /**
@@ -147,6 +153,91 @@ class Font
     public function setLanguages(array $languages): void
     {
         $this->languages = new ArrayCollection($languages);
+    }
+
+//    FACES
+
+    /**
+     * @return Face[]
+     */
+    public function getFaces(): array
+    {
+        $sortedFaces = $this->faces->toArray();
+        usort($sortedFaces, [Face::class, 'compareSort']);
+        return $sortedFaces;
+    }
+
+    public function associateFaces(): void
+    {
+        foreach ($this->files as $current) {
+            $ext = $current->getInfo()->getExt();
+            if (in_array($ext, ['ttf', 'eot', 'woff', 'woff2'])) {
+
+                $name = $current->getInfo()->getName();
+                $expr = new Comparison('name', Comparison::EQ, $name);
+                $criteria = (new Criteria())->where($expr);
+
+                if ($this->faces->matching($criteria)->isEmpty()) {
+                    $this->addFace(FaceId::next(), $name);
+                }
+                /** @var $face Face */
+                $face = $this->faces->matching($criteria)->first();
+                if (!$face->hasFile($current)) {
+                    $face->addFile($current);
+                    $current->assignFace($face);
+                }
+            }
+        }
+        foreach ($this->faces as $current) {
+            $filesByFaceName = $this->files->filter(function(File $file, $key) use ($current) {
+                return $file->getInfo()->getName() === $current->getName();
+            });
+            if ($filesByFaceName->isEmpty()) {
+                $this->removeFace($current->getId());
+            }
+        }
+    }
+
+    public function sortFaces(array $sortedIds): void
+    {
+        $idsCheck = $this->faces->forAll(function ($key, Face $face) use ($sortedIds) {
+            return in_array($face->getId()->getValue(), $sortedIds);
+        });
+        if (!$idsCheck) {
+            throw new \DomainException('Ids list is inconsistent.');
+        }
+
+        $sortOffset = $this->faces->last()->getSort()+1;
+        foreach ($this->faces as $face) {
+            $key = array_search($face->getId()->getValue(), $sortedIds);
+            $face->setSort($sortOffset+$key);
+        }
+    }
+
+    public function hasFaces(): bool
+    {
+        return count($this->getFaces()) > 0;
+    }
+
+    private function addFace(FaceId $id, string $name): void
+    {
+        $sort = 1;
+        if ($this->faces && $lastFace = $this->faces->last()) {
+            /** @var $lastFace Face */
+            $sort = $lastFace->getSort() + 1;
+        }
+        $this->faces->add(new Face($this, $id, $name, $sort));
+    }
+
+    private function removeFace(FaceId $id): void
+    {
+        foreach ($this->faces as $current) {
+            if ($current->getId()->isEqual($id)) {
+                $this->faces->removeElement($current);
+                return;
+            }
+        }
+        throw new \DomainException('Face is not found.');
     }
 
 //    FILES

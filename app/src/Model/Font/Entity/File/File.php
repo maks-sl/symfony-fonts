@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Model\Font\Entity\File;
 
+use App\Model\Font\Entity\Face\Face;
 use App\Model\Font\Entity\Font;
 
 class File
 {
     private $font;
+    private $face;
     private $id;
     private $date;
     private $info;
@@ -34,5 +36,10 @@ class File
     public function getInfo(): Info
     {
         return $this->info;
+    }
+
+    public function assignFace(Face $face): void
+    {
+        $this->face = $face;
     }
 }
