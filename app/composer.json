@@ -7,6 +7,8 @@
     "ext-ctype": "*",
     "ext-iconv": "*",
     "knplabs/knp-paginator-bundle": "5.x-dev",
+    "league/flysystem-bundle": "dev-master",
+    "league/flysystem-ftp": "2.x-dev",
     "ramsey/uuid": "4.x-dev",
     "sensio/framework-extra-bundle": "^5.1",
     "symfony/asset": "*",
