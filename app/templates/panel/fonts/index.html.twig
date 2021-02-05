@@ -1,0 +1,65 @@
+{% extends 'panel.html.twig' %}
+
+{% block title %}Fonts{% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{{ path('panel') }}">Panel</a></li>
+    <li class="breadcrumb-item active">Fonts</li>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="controls mb-3">
+
+                {{ form_start(form) }}
+                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">.
+
+                    <div class="input-group mr-2 pt-2" role="group" aria-label="Filter group">
+                        {{ form_widget(form.name) }}
+                        {{ form_widget(form.slug) }}
+                        {{ form_widget(form.status) }}
+                    </div>
+                    <div class="btn-group pt-2">
+                        <button type="submit" class="btn btn-secondary">Filter</button>
+                        <a href="{{ path('fonts') }}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+
+            <div class="box">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>{{ knp_pagination_sortable(pagination, 'Name', 'f.name') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Slug', 'f.slug') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Status', 'f.status') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Date', 'f.date') }}</th>
+                        <th>{{ knp_pagination_sortable(pagination, 'Faces Count', 'faces_count') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for font in pagination %}
+                        <tr>
+                            <td>
+                                <a href="#">{{ font.name }}</a>
+                            </td>
+                            <td>{{ font.slug }}</td>
+                            <td>{{ font_status(font.status) }}</td>
+                            <td>{{ font.date|date('Y-m-d') }}</td>
+                            <td>{{ font.faces_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
