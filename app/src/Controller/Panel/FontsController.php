@@ -246,4 +246,30 @@ class FontsController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("/{id}/files/{file_id}/delete", name=".files.delete", methods={"POST"})
+     * @param Font $font
+     * @param string $file_id
+     * @param Request $request
+     * @param Files\Remove\Handler $handler
+     * @return Response
+     */
+    public function fileDelete(Font $font, string $file_id, Request $request, Files\Remove\Handler $handler): Response
+    {
+        if (!$this->isCsrfTokenValid('delete-file', $request->request->get('token'))) {
+            return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+        }
+
+        $command = new Files\Remove\Command($font->getId()->getValue(), $file_id);
+
+        try {
+            $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->errors->handle($e);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+    }
 }

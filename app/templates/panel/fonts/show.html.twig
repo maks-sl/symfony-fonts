@@ -119,6 +119,14 @@
                                 <td>{{ file.info.ext }}</td>
                                 <td>{{ (file.info.size / 1024)|number_format(2, '.', ',') }} KB</td>
                                 <td>{{ file.date|date('Y-m-d H:i:s') }}</td>
+                                <td style="width: 27px; box-sizing: content-box">
+                                    <form action="{{ path('fonts.files.delete', {'id': font.id, 'file_id': file.id}) }}" method="post" onsubmit="return confirm('Are you sure?')">
+                                        <input type="hidden" name="token" value="{{ csrf_token('delete-file') }}" />
+                                        <button type="submit" class="btn btn-sm btn-default">
+                                            <span class="cil-x-circle"></span>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -49,6 +49,17 @@ class FileManager
         return $result;
     }
 
+    /**
+     * @param string $dir
+     * @param string $name
+     * @param string $ext
+     * @throws FilesystemException
+     */
+    public function remove(string $dir, string $name, string $ext): void
+    {
+        $this->ftpStorage->delete($dir . '/' . $name. '.' . $ext);
+    }
+
     private function isExtAllowed(string $ext): bool
     {
         return (bool) preg_match('/(eot|ttf|woff|woff2|svg|css)$/', $ext);
