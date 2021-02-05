@@ -173,6 +173,33 @@ class Font
         throw new \DomainException('File is not found.');
     }
 
+    /**
+     * @param string $name
+     * @param string $ext
+     * @return File|null
+     */
+    public function findFile(string $name, string $ext): ?File
+    {
+        $filtered = $this->files->filter(function(File $file, $key) use ($name, $ext) {
+            return $file->getInfo()->getName() === $name && $file->getInfo()->getExt() === $ext;
+        });
+        if (!$filtered->isEmpty()) {
+            return $filtered->first();
+        }
+        return null;
+    }
+
+    /**
+     * @param string $ext
+     * @return File[]
+     */
+    public function findFilesByExt(string $ext): array
+    {
+        return $this->files->filter(function(File $file, $key) use ($ext) {
+            return $file->getInfo()->getExt() === $ext;
+        })->toArray();
+    }
+
     public function addFile(\DateTimeImmutable $date, FileId $id, Info $info): void
     {
         foreach ($this->files as $current) {
