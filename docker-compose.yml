@@ -48,6 +48,14 @@ services:
         image: mailhog/mailhog
         ports:
             - "8082:8025"
+    storage-public:
+        build:
+            context: ./storage/docker/development
+            dockerfile: nginx.docker
+        volumes:
+            - ./storage:/app
+        ports:
+            - "8081:80"
     storage-ftp:
         image: stilliard/pure-ftpd
         environment:
