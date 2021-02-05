@@ -6,19 +6,17 @@
     <li class="breadcrumb-item"><a href="{{ path('panel') }}">Panel</a></li>
     <li class="breadcrumb-item active">Users</li>
 {% endblock %}
+
 {% block body %}
 
-    <div class="card">
-        <div class="card-body">
-            <div class="controls">
-                <a href="{{ path('users.create') }}" class="btn btn-success">Create User</a>
-            </div>
-        </div>
+    <div class="controls mb-3">
+        <a href="{{ path('users.create') }}" class="btn btn-success">Create User</a>
     </div>
 
     <div class="card">
         <div class="card-body">
             <div class="controls mb-3">
+
                 {{ form_start(form) }}
                 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">.
 
@@ -29,7 +27,7 @@
                         {{ form_widget(form.status) }}
                     </div>
                     <div class="btn-group pt-2">
-                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <button type="submit" class="btn btn-secondary">Filter</button>
                         <a href="{{ path('users') }}" class="btn btn-outline-secondary">Reset</a>
                     </div>
                 </div>

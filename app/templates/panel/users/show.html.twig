@@ -11,31 +11,27 @@
 {% block body %}
 
     {% if user.id.value != app.user.id %}
-        <div class="card">
-            <div class="card-body">
-                <div class="controls">
-                    <a href="{{ path('users.edit', {'id': user.id}) }}" class="btn btn-primary">Edit</a>
-                    <a href="{{ path('users.role', {'id': user.id}) }}" class="btn btn-primary">Change Role</a>
-                    {% if user.wait %}
-                        <form action="{{ path('users.confirm', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item">
-                            <input type="hidden" name="token" value="{{ csrf_token('confirm') }}" />
-                            <button type="submit" class="btn btn-success">Confirm</button>
-                        </form>
-                    {% endif %}
-                    {% if user.active %}
-                        <form action="{{ path('users.block', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item">
-                            <input type="hidden" name="token" value="{{ csrf_token('block') }}" />
-                            <button type="submit" class="btn btn-danger">Block</button>
-                        </form>
-                    {% endif %}
-                    {% if user.blocked %}
-                        <form action="{{ path('users.activate', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item">
-                            <input type="hidden" name="token" value="{{ csrf_token('activate') }}" />
-                            <button type="submit" class="btn btn-success">Activate</button>
-                        </form>
-                    {% endif %}
-                </div>
-            </div>
+        <div class="controls mb-3">
+            <a href="{{ path('users.edit', {'id': user.id}) }}" class="btn btn-primary list-inline-item mr-0">Edit</a>
+            <a href="{{ path('users.role', {'id': user.id}) }}" class="btn btn-primary list-inline-item mr-0">Change Role</a>
+            {% if user.wait %}
+                <form action="{{ path('users.confirm', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item mr-0">
+                    <input type="hidden" name="token" value="{{ csrf_token('confirm') }}" />
+                    <button type="submit" class="btn btn-success">Confirm</button>
+                </form>
+            {% endif %}
+            {% if user.active %}
+                <form action="{{ path('users.block', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item mr-0">
+                    <input type="hidden" name="token" value="{{ csrf_token('block') }}" />
+                    <button type="submit" class="btn btn-danger">Block</button>
+                </form>
+            {% endif %}
+            {% if user.blocked %}
+                <form action="{{ path('users.activate', {'id': user.id}) }}" method="post" onsubmit="return confirm('Are you sure?')" class="list-inline-item mr-0">
+                    <input type="hidden" name="token" value="{{ csrf_token('activate') }}" />
+                    <button type="submit" class="btn btn-success">Activate</button>
+                </form>
+            {% endif %}
         </div>
     {% endif %}
 
