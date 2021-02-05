@@ -272,4 +272,32 @@ class FontsController extends AbstractController
 
         return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
     }
+
+    /**
+     * @Route("/{id}/clear-css", name=".clear-css")
+     * @param Font $font
+     * @param Request $request
+     * @param Files\ClearCss\Handler $handler
+     * @param FileManager $fileManager
+     * @return Response
+     * @throws FilesystemException
+     */
+    public function clearCss(Font $font, Request $request, Files\ClearCss\Handler $handler, FileManager $fileManager): Response
+    {
+        if (!$this->isCsrfTokenValid('clear-css', $request->request->get('token'))) {
+            return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+        }
+
+        $command = new Files\ClearCss\Command($font->getId()->getValue());
+
+        try {
+            $command->files = $fileManager->clearCss($font);
+            $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->errors->handle($e);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+    }
 }

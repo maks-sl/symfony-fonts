@@ -12,10 +12,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FileManager
 {
     private $ftpStorage;
+    private $innerUrl;
 
-    public function __construct(FilesystemOperator $ftpStorage)
+    public function __construct(FilesystemOperator $ftpStorage, string $innerUrl)
     {
         $this->ftpStorage = $ftpStorage;
+        $this->innerUrl = $innerUrl;
     }
 
     /**
@@ -46,6 +48,41 @@ class FileManager
                 $result[] = new AddedFile($dir, $name, $ext, $file->getSize());
             }
         }
+        return $result;
+    }
+
+    /**
+     * @param Font $font
+     * @return ReplacedFile[]
+     * @throws FilesystemException
+     */
+    public function clearCss(Font $font): array
+    {
+        $result = [];
+        $path = $font->getId()->getValue();
+
+        foreach ($font->findFilesByExt('css') as $file) {
+            $fileName = $file->getInfo()->getName() .'.' . $file->getInfo()->getExt();
+            if (!$content = file_get_contents($this->innerUrl . '/' . $path . '/' . $fileName)) {
+                throw new \DomainException('Error loading file content');
+            }
+            $newContent = trim(
+                preg_replace("/\/\*(.|\n)*?\*\//", "",
+                    preg_replace("/\/\/.*/", "", $content)
+            ));
+            $this->ftpStorage->delete($path . '/' . $fileName);
+            $this->ftpStorage->write($path . '/' . $fileName, $newContent);
+            $size = $this->ftpStorage->fileSize($path . '/' . $fileName);
+
+            $result[] = new ReplacedFile(
+                $file->getId()->getValue(),
+                $path,
+                $file->getInfo()->getName(),
+                $file->getInfo()->getExt(),
+                $size
+            );
+        }
+
         return $result;
     }
 

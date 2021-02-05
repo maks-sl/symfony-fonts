@@ -36,3 +36,8 @@ services:
 
     App\EventListeners\MailerSubscriber:
         arguments: ['%env(MAILER_FROM_EMAIL)%', '%env(MAILER_FROM_NAME)%']
+
+    App\Model\Font\Service\File\FileManager:
+        bind:
+            string $innerUrl: '%env(STORAGE_INNER_URL)%'
+#        arguments: ['@ftp.storage', '%env(STORAGE_INNER_URL)%']

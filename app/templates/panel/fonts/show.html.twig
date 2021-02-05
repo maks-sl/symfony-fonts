@@ -42,6 +42,12 @@
         <div class="col-lg-10 col-xl-8">
             <div class="card">
                 <div class="card-header">
+                    <form action="{{ path('fonts.clear-css', {'id': font.id}) }}" method="post" class="card-header-actions">
+                        <input type="hidden" name="token" value="{{ csrf_token('clear-css') }}" />
+                        <button type="submit" class="btn btn btn-secondary py-0">
+                            <span class="cil-brush"></span> Clear CSS
+                        </button>
+                    </form>
                     Font Details
                 </div>
                 <table class="table table-bordered mb-0">
