@@ -14,19 +14,72 @@ use App\Model\Font\Entity\File\Info;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="font_fonts", indexes={
+ *     @ORM\Index(columns={"date"})
+ * })
+ */
 class Font
 {
+    /**
+     * @ORM\Column(type="font_id")
+     * @ORM\Id
+     */
     private $id;
+    /**
+     * @var \DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable")
+     */
     private $date;
+    /**
+     * @var \DateTimeImmutable
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
     private $filesUpdatedAt;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $slug;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $name;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=128)
+     */
     private $author;
+    /**
+     * @var Status
+     * @ORM\Column(type="font_status", length=16)
+     */
     private $status;
+    /**
+     * @var Status
+     * @ORM\Column(type="font_license", length=16)
+     */
     private $license;
+    /**
+     * @var ArrayCollection|Language[]
+     * @ORM\Column(type="font_languages")
+     */
     private $languages;
+    /**
+     * @var ArrayCollection|File[]
+     * @ORM\OneToMany(targetEntity="App\Model\Font\Entity\File\File", mappedBy="font", orphanRemoval=true, cascade={"all"})
+     * @ORM\OrderBy({"date" = "ASC"})
+     */
     private $files;
+    /**
+     * @var ArrayCollection|Face[]
+     * @ORM\OneToMany(targetEntity="App\Model\Font\Entity\Face\Face", mappedBy="font", orphanRemoval=true, cascade={"all"})
+     * @ORM\OrderBy({"sort" = "ASC"})
+     */
     private $faces;
 
     /**

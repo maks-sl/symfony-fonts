@@ -14,6 +14,12 @@ doctrine:
             user_id: 'App\Model\User\Entity\IdType'
             user_email: 'App\Model\User\Entity\EmailType'
             user_role: 'App\Model\User\Entity\RoleType'
+            font_id: 'App\Model\Font\Entity\IdType'
+            font_status: 'App\Model\Font\Entity\StatusType'
+            font_license: 'App\Model\Font\Entity\LicenseType'
+            font_languages: 'App\Model\Font\Entity\LanguageType'
+            font_face_id: 'App\Model\Font\Entity\Face\IdType'
+            font_file_id: 'App\Model\Font\Entity\File\IdType'
 
     orm:
         auto_generate_proxy_classes: true
@@ -26,3 +32,9 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Model/User/Entity'
                 prefix: 'App\Model\User\Entity'
                 alias: User
+            Font:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Model/Font/Entity'
+                prefix: 'App\Model\Font\Entity'
+                alias: Font

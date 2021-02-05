@@ -8,13 +8,43 @@ use App\Model\Font\Entity\File\File;
 
 use App\Model\Font\Entity\Font;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="font_faces", uniqueConstraints={
+ *     @ORM\UniqueConstraint(columns={"font_id", "sort"}),
+ *     @ORM\UniqueConstraint(columns={"font_id", "name"})
+ * })
+ */
 class Face
 {
+    /**
+     * @var Font
+     * @ORM\ManyToOne(targetEntity="App\Model\Font\Entity\Font", inversedBy="faces")
+     * @ORM\JoinColumn(name="font_id", referencedColumnName="id", nullable=false)
+     */
     private $font;
+    /**
+     * @ORM\Column(type="font_face_id")
+     * @ORM\Id
+     */
     private $id;
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
     private $name;
+    /**
+     * @var integer
+     * @ORM\Column(type="integer")
+     */
     private $sort;
+    /**
+     * @var ArrayCollection|File[]
+     * @ORM\OneToMany(targetEntity="App\Model\Font\Entity\File\File", mappedBy="face")
+     * @ORM\OrderBy({"date" = "ASC"})
+     */
     private $files;
 
     public function __construct(
