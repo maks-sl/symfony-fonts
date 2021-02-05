@@ -120,7 +120,7 @@
                         {% for file in font.files %}
                             <tr>
                                 <td>
-                                    {{ file.info.name }}
+                                    <a href="{{ font_file_url(file) }}" target="_blank">{{ file.info.name }}</a>
                                 </td>
                                 <td>{{ file.info.ext }}</td>
                                 <td>{{ (file.info.size / 1024)|number_format(2, '.', ',') }} KB</td>

@@ -12,11 +12,13 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FileManager
 {
     private $ftpStorage;
+    private $publicUrl;
     private $innerUrl;
 
-    public function __construct(FilesystemOperator $ftpStorage, string $innerUrl)
+    public function __construct(FilesystemOperator $ftpStorage, string $publicUrl, string $innerUrl)
     {
         $this->ftpStorage = $ftpStorage;
+        $this->publicUrl = $publicUrl;
         $this->innerUrl = $innerUrl;
     }
 
@@ -104,6 +106,11 @@ class FileManager
     public function removeDir(string $dir): void
     {
         $this->ftpStorage->deleteDirectory($dir);
+    }
+
+    public function publicUrl(string $path): string
+    {
+        return $this->publicUrl . '/' . $path;
     }
 
     private function isExtAllowed(string $ext): bool
