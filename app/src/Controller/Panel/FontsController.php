@@ -9,6 +9,8 @@ use App\Annotation\Guid;
 use App\Model\Font\Entity\Font;
 use App\Model\Font\UseCase\Create;
 use App\Model\Font\UseCase\Edit;
+use App\Model\Font\UseCase\Activate;
+use App\Model\Font\UseCase\Hide;
 use App\Model\Font\UseCase\Remove;
 
 use App\ReadModel\Font\Filter;
@@ -128,6 +130,56 @@ class FontsController extends AbstractController
             'font' => $font,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/{id}/activate", name=".activate", methods={"POST"})
+     * @param Font $font
+     * @param Request $request
+     * @param Activate\Handler $handler
+     * @return Response
+     */
+    public function activate(Font $font, Request $request, Activate\Handler $handler): Response
+    {
+        if (!$this->isCsrfTokenValid('font-activate', $request->request->get('token'))) {
+            return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+        }
+
+        $command = new Activate\Command($font->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->errors->handle($e);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+    }
+
+    /**
+     * @Route("/{id}/hide", name=".hide", methods={"POST"})
+     * @param Font $font
+     * @param Request $request
+     * @param Hide\Handler $handler
+     * @return Response
+     */
+    public function hide(Font $font, Request $request, Hide\Handler $handler): Response
+    {
+        if (!$this->isCsrfTokenValid('font-hide', $request->request->get('token'))) {
+            return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+        }
+
+        $command = new Hide\Command($font->getId()->getValue());
+
+        try {
+            $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->errors->handle($e);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
     }
 
     /**

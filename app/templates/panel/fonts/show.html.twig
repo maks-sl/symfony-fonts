@@ -20,6 +20,22 @@
             <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
+
+        {% if font.isHidden() %}
+            <form action="{{ path('fonts.activate', {'id': font.id}) }}" class="list-inline-item mr-0" method="post"
+                    {% if not font.hasCss() or not font.isZipConsistent() or not font.hasFaces() %}
+                        onsubmit="return confirm('Font is inconsistent. Are you sure?')"
+                    {% endif %}
+            >
+                <input type="hidden" name="token" value="{{ csrf_token('font-activate') }}" />
+                <button type="submit" class="btn btn-success">Activate</button>
+            </form>
+        {% else %}
+            <form action="{{ path('fonts.hide', {'id': font.id}) }}" method="post" class="list-inline-item mr-0">
+                <input type="hidden" name="token" value="{{ csrf_token('font-hide') }}" />
+                <button type="submit" class="btn btn-secondary">Hide</button>
+            </form>
+        {% endif %}
     </div>
 
     <div class="row">
