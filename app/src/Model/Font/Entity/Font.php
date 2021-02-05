@@ -223,4 +223,27 @@ class Font
         throw new \DomainException('File is not found.');
     }
 
+    public function hasFile(string $name, string $ext): bool
+    {
+        return (bool) $this->findFile($name, $ext);
+    }
+
+    public function hasCss(): bool
+    {
+        return count($this->findFilesByExt('css')) > 0;
+    }
+
+    public function hasZip(): bool
+    {
+        return count($this->findFilesByExt('zip')) > 0;
+    }
+
+    public function isZipConsistent(): bool
+    {
+        if ($zipFile = current($this->findFilesByExt('zip'))) {
+            return $zipFile->getDate() >= $this->filesUpdatedAt;
+        }
+        return false;
+    }
+
 }
