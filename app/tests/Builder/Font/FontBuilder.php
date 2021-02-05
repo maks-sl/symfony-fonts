@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Builder\Font;
 
+use App\Model\Font\Entity\File\Info;
 use App\Model\Font\Entity\Id;
 use App\Model\Font\Entity\Font;
+use App\Model\Font\Entity\File\Id as FileId;
 use App\Model\Font\Entity\Language;
 use App\Model\Font\Entity\License;
 
@@ -17,6 +19,7 @@ class FontBuilder
     private $author;
     private $license;
     private $languages;
+    private $filesData;
 
     public function __construct()
     {
@@ -26,8 +29,19 @@ class FontBuilder
         $this->author = 'Font Author';
         $this->license = License::free();
         $this->languages = [Language::latin(), Language::cyrillic()];
+        $this->filesData = [];
     }
 
+    public function withFile(FileId $id, string $name, string $ext): self
+    {
+        $clone = clone $this;
+        $clone->filesData[] = [
+            'id' => $id,
+            'name' => $name,
+            'ext' => $ext,
+        ];
+        return $clone;
+    }
 
     public function build(): Font
     {
@@ -40,6 +54,19 @@ class FontBuilder
             $this->license,
             $this->languages
         );
+
+        foreach ($this->filesData as $data) {
+            $font->addFile(
+                new \DateTimeImmutable(),
+                $data['id'],
+                new Info(
+                    $data['id']->getValue(),
+                    $data['name'],
+                    $data['ext'],
+                    random_int(50, 500)
+                )
+            );
+        }
 
         return $font;
     }

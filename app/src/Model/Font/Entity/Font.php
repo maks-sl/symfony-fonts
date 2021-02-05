@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace App\Model\Font\Entity;
 
+use App\Model\Font\Entity\File\File;
+
+use App\Model\Font\Entity\File\Id as FileId;
+use App\Model\Font\Entity\File\Info;
+
 use Doctrine\Common\Collections\ArrayCollection;
 
 class Font
 {
     private $id;
     private $date;
+    private $filesUpdatedAt;
     private $slug;
     private $name;
     private $author;
     private $status;
     private $license;
     private $languages;
+    private $files;
 
     /**
      * Font constructor.
@@ -45,6 +52,7 @@ class Font
         $this->license = $license;
         $this->setLanguages($languages);
         $this->status = Status::hidden();
+        $this->files = new ArrayCollection();
     }
 
     /**
@@ -93,6 +101,11 @@ class Font
         return $this->date;
     }
 
+    public function getFilesUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->filesUpdatedAt;
+    }
+
     public function getSlug(): string
     {
         return $this->slug;
@@ -134,6 +147,53 @@ class Font
     public function setLanguages(array $languages): void
     {
         $this->languages = new ArrayCollection($languages);
+    }
+
+//    FILES
+
+    /**
+     * @return File[]
+     */
+    public function getFiles(): array
+    {
+        return $this->files->toArray();
+    }
+
+    /**
+     * @param FileId $id
+     * @return File
+     */
+    public function getFile(FileId $id): File
+    {
+        foreach ($this->files as $current) {
+            if ($current->getId()->isEqual($id)) {
+                return $current;
+            }
+        }
+        throw new \DomainException('File is not found.');
+    }
+
+    public function addFile(\DateTimeImmutable $date, FileId $id, Info $info): void
+    {
+        foreach ($this->files as $current) {
+            if ($current->getInfo()->isFileNameSame($info)) {
+                throw new \DomainException('Filename is already exists.');
+            }
+        }
+        $this->files->add(new File($this, $id, $date, $info));
+        $this->filesUpdatedAt = $date;
+    }
+
+    public function removeFile(\DateTimeImmutable $date, FileId $id): void
+    {
+        foreach ($this->files as $current) {
+            if ($current->getId()->isEqual($id)) {
+                $this->files->removeElement($current);
+                $this->filesUpdatedAt = $date;
+                return;
+            }
+        }
+        throw new \DomainException('File is not found.');
     }
 
 }
