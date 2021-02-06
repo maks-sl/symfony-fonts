@@ -108,6 +108,9 @@
     "laminas/laminas-code": {
         "version": "4.0.x-dev"
     },
+    "laminas/laminas-eventmanager": {
+        "version": "3.4.x-dev"
+    },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.2.x-dev"
     },
