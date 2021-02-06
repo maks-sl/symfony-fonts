@@ -1,5 +1,12 @@
 {% extends 'panel.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {% for face in font.faces %}
+        {{ font_face_style(face) }}
+    {% endfor %}
+{% endblock %}
+
 {% block title %}{{ font.name }}{% endblock %}
 
 {% block breadcrumbs %}
@@ -99,7 +106,7 @@
                 <table class="table mb-0">
                     <tbody>
                     {% for face in font.faces %}
-                        <tr>
+                        <tr class="font-face-{{ face.name }}">
                             <td>{{ face.name }}</td>
                             <td>{{ face.files|length }}</td>
                         </tr>

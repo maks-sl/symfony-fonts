@@ -1,0 +1,21 @@
+<style>
+    @font-face {
+        font-family: '{{ face.name }}';
+        src:
+        {% for file in face.files %}
+            url('{{ font_file_url(file) }}') format('{{ file.info.ext }}')
+            {% if loop.last %}
+                ;
+            {% else %}
+                ,
+            {% endif %}
+        {% endfor %}
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+    .font-face-{{ face.name }} {
+         font-family: '{{ face.name }}', sans-serif;
+     }
+</style>
+
