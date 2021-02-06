@@ -300,4 +300,39 @@ class FontsController extends AbstractController
 
         return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
     }
+
+    /**
+     * @Route("/{id}/unzip", name=".unzip")
+     * @param Font $font
+     * @param Request $request
+     * @param Files\Unzip\Handler $handler
+     * @param FileManager $fileManager
+     * @return Response
+     * @throws FilesystemException
+     */
+    public function unzip(Font $font, Request $request, Files\Unzip\Handler $handler, FileManager $fileManager): Response
+    {
+        $command = new Files\Unzip\Command($font->getId()->getValue());
+
+        $form = $this->createForm(Files\Unzip\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $file = $form->get('zip_file')->getData();
+            try {
+                $command->files = $fileManager->uploadZip($file, $font);
+                $handler->handle($command);
+                return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+            } catch (\DomainException $e) {
+                $this->errors->handle($e);
+                $this->addFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('panel/fonts/unzip.html.twig', [
+            'font' => $font,
+            'form' => $form->createView(),
+        ]);
+    }
 }

@@ -120,6 +120,9 @@
                     <a href="{{ path('fonts.files', {'id': font.id}) }}" class="btn btn-success py-0 card-header-actions">
                         <span class="cil-plus"></span> Upload Files
                     </a>
+                    <a href="{{ path('fonts.unzip', {'id': font.id}) }}" class="btn btn-success py-0 card-header-actions mr-2">
+                        <span class="cil-plus"></span> Upload Zip
+                    </a>
                     Files ({{ font.files|length }})
                 </div>
                 <table class="table mb-0">

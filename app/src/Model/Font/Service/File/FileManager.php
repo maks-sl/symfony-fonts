@@ -8,6 +8,7 @@ use App\Model\Font\Entity\Font;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use ZipArchive;
 
 class FileManager
 {
@@ -51,6 +52,47 @@ class FileManager
             }
         }
         return $result;
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @param Font $font
+     * @return AddedFile[]
+     * @throws FilesystemException
+     */
+    public function uploadZip(UploadedFile $file, Font $font): array
+    {
+        $files = [];
+        $zip = new ZipArchive();
+        $isOpen = $zip->open($file->getPathname());
+        if ($isOpen === TRUE) {
+            for ($i = 0; $i < $zip->count(); $i++) {
+                $fileName = $zip->getNameIndex($i);
+                $info = $zip->statIndex($i);
+                if (!$fileName || !$info) {
+                    throw new \DomainException("Error getting info of $i element when unzip for ".$font->getName());
+                }
+                $size = $info['size'];
+                $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+                $name = pathinfo($fileName, PATHINFO_FILENAME);
+
+                if ($this->isExtAllowed($ext) && !$font->hasFile($name, $ext)) {
+                    if (!$res = $zip->getStream($fileName)) {
+                        throw new \DomainException("Error reading file ".$fileName);
+                    }
+                    $this->ftpStorage->writeStream($font->getId()->getValue() . '/' . $name . '.' . $ext, $res);
+                    if (is_resource($res)) {
+                        fclose($res);
+                    }
+                    $files[] = new AddedFile($font->getId()->getValue(), $name, $ext, $size);
+                }
+            }
+            $zip->close();
+            return $files;
+
+        } else {
+            throw new \DomainException("Error opening archive #".$isOpen);
+        }
     }
 
     /**
