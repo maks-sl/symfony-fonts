@@ -55,6 +55,12 @@
                             <span class="cil-brush"></span> Clear CSS
                         </button>
                     </form>
+                    <form action="{{ path('fonts.zip', {'id': font.id}) }}" method="post" class="card-header-actions mr-2">
+                        <input type="hidden" name="token" value="{{ csrf_token('zip') }}" />
+                        <button type="submit" class="btn btn btn-{{ font.isZipConsistent() ? 'secondary' : 'warning' }} py-0">
+                            <span class="cil-briefcase"></span> Build Zip
+                        </button>
+                    </form>
                     Font Details
                 </div>
                 <table class="table table-bordered mb-0">

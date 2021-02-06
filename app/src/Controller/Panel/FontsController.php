@@ -26,6 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use ZipStream\Exception\OverflowException;
+
 /**
  * @Route("/panel/fonts", name="fonts")
  */
@@ -334,5 +336,33 @@ class FontsController extends AbstractController
             'font' => $font,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/{id}/zip", name=".zip")
+     * @param Font $font
+     * @param Request $request
+     * @param Files\Zip\Handler $handler
+     * @param FileManager $fileManager
+     * @return Response
+     * @throws FilesystemException
+     * @throws OverflowException
+     */
+    public function zip(Font $font, Request $request, Files\Zip\Handler $handler, FileManager $fileManager): Response
+    {
+        if (!$this->isCsrfTokenValid('zip', $request->request->get('token'))) {
+            return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+        }
+
+        $command = new Files\Zip\Command($font->getId()->getValue());
+        try {
+            $command->file = $fileManager->buildZip($font);
+            $handler->handle($command);
+        } catch (\DomainException $e) {
+            $this->errors->handle($e);
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
     }
 }

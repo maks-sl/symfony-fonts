@@ -10,8 +10,14 @@ use League\Flysystem\FilesystemOperator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ZipArchive;
 
+use ZipStream\Exception\OverflowException;
+use ZipStream\Option\Archive;
+use ZipStream\ZipStream;
+
 class FileManager
 {
+    private const ZIP_FILE_NAME = 'font.zip';
+
     private $ftpStorage;
     private $publicUrl;
     private $innerUrl;
@@ -93,6 +99,47 @@ class FileManager
         } else {
             throw new \DomainException("Error opening archive #".$isOpen);
         }
+    }
+
+    /**
+     * @param Font $font
+     * @return AddedFile
+     * @throws OverflowException
+     * @throws FilesystemException
+     */
+    public function buildZip(Font $font): AddedFile
+    {
+        $path = $font->getId()->getValue();
+        $name = pathinfo(self::ZIP_FILE_NAME, PATHINFO_FILENAME);
+        $ext = pathinfo(self::ZIP_FILE_NAME, PATHINFO_EXTENSION);
+
+        if ($font->hasFile($name, $ext)) {
+            $this->ftpStorage->delete($path . '/' .self::ZIP_FILE_NAME);
+        }
+
+        $tempStream = fopen('php://memory', 'w+');
+        $zipStreamOptions = new Archive();
+        $zipStreamOptions->setOutputStream($tempStream);
+        $zipStreamOptions->setZeroHeader(true);
+
+        $zipStream = new ZipStream(self::ZIP_FILE_NAME, $zipStreamOptions);
+
+        foreach ($font->getFiles() as $file) {
+            if ($this->isExtAllowed($file->getInfo()->getExt())) {
+                $fileName = $file->getInfo()->getName() .'.' . $file->getInfo()->getExt();
+                if (!$resource = fopen($this->innerUrl . '/' . $path . '/' . $fileName, 'r')) {
+                    throw new \DomainException('Error loading file by url');
+                }
+                $zipStream->addFileFromStream($fileName, $resource);
+            }
+        }
+        $zipStream->finish();
+
+        $size = fstat($tempStream)['size'];
+        $this->ftpStorage->writeStream($path . '/' .self::ZIP_FILE_NAME, $tempStream);
+        fclose($tempStream);
+
+        return new AddedFile($path, $name, $ext, $size);
     }
 
     /**
