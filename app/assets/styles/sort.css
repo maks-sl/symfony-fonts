@@ -1,0 +1,16 @@
+#sortable {
+    list-style-type: none;
+    padding: 0;
+    width: 60%;
+}
+#sortable li {
+    margin: 0 3px 3px 3px;
+    padding: 3px;
+    padding-left: 15px;
+    font-size: 20px;
+}
+#sortable li span {
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: middle;
+}

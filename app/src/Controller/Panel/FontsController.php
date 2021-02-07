@@ -14,6 +14,7 @@ use App\Model\Font\UseCase\Activate;
 use App\Model\Font\UseCase\Hide;
 use App\Model\Font\UseCase\Remove;
 use App\Model\Font\UseCase\Files;
+use App\Model\Font\UseCase\Sort;
 
 use App\ReadModel\Font\Filter;
 use App\ReadModel\Font\FontFetcher;
@@ -364,5 +365,36 @@ class FontsController extends AbstractController
         }
 
         return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+    }
+
+    //////////// FACES
+
+    /**
+     * @Route("/{id}/sort", name=".sort")
+     * @param Font $font
+     * @param Request $request
+     * @param Sort\Handler $handler
+     * @return Response
+     */
+    public function sort(Font $font, Request $request, Sort\Handler $handler): Response
+    {
+        $command = Sort\Command::fromFont($font);
+        $form = $this->createForm(Sort\Form::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $handler->handle($command);
+                return $this->redirectToRoute('fonts.show', ['id' => $font->getId()]);
+            } catch (\DomainException $e) {
+                $this->errors->handle($e);
+                $this->addFlash('error', $e->getMessage());
+            }
+        }
+
+        return $this->render('panel/fonts/sort.html.twig', [
+            'font' => $font,
+            'form' => $form->createView(),
+        ]);
     }
 }

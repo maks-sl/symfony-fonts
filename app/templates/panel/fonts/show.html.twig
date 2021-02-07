@@ -107,6 +107,10 @@
 
             <div class="card">
                 <div class="card-header">
+                    <a href="{{ path('fonts.sort', {'id': font.id}) }}"
+                       class="btn btn-success py-0 card-header-actions">
+                        <span class="cil-swap-vertical"></span> Sort
+                    </a>
                     Faces ({{ font.faces|length }})
                 </div>
                 <table class="table mb-0">
