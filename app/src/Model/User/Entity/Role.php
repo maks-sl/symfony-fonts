@@ -9,10 +9,12 @@ use Webmozart\Assert\Assert;
 class Role
 {
     public const USER = 'ROLE_USER';
+    public const MANAGER = 'ROLE_MANAGER';
     public const ADMIN = 'ROLE_ADMIN';
 
     public const CHOICES_LIST = [
         'User' => self::USER,
+        'Manager' => self::MANAGER,
         'Admin' => self::ADMIN,
     ];
 
