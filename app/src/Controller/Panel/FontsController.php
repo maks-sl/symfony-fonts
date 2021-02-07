@@ -26,11 +26,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 use ZipStream\Exception\OverflowException;
 
 /**
  * @Route("/panel/fonts", name="fonts")
+ * @IsGranted("ROLE_MANAGE_FONTS")
  */
 class FontsController extends AbstractController
 {

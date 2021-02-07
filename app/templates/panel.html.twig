@@ -23,10 +23,14 @@
         <img class="c-sidebar-brand-full" src="/images/logo-white.png" width="115" height="45" alt="">
     </div>
     <ul class="c-sidebar-nav">
+        {% if is_granted('ROLE_MANAGE_USERS') %}
         <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link" href="{{ path('users') }}">
                 <span class="c-sidebar-nav-icon cil-user"></span> Users</a></li>
+        {% endif %}
+        {% if is_granted('ROLE_MANAGE_FONTS') %}
         <li class="c-sidebar-nav-item"><a class="c-sidebar-nav-link" href="{{ path('fonts') }}">
                 <span class="c-sidebar-nav-icon cil-text"></span> Fonts</a></li>
+        {% endif %}
     </ul>
     <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
 </div>
